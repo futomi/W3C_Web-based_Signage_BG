@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Device Information API</title>
+    <script src='https://www.w3.org/Tools/respec/respec-w3c-common'
+            class='remove'></script>
+    <script class="remove">
+      var respecConfig = {
+          specStatus  : "BG-DRAFT",
+          shortName   : "device-information-api",
+          publishDate : "2016-10-01",
+          editors     : [
+              { name: "Futomi Hatano",
+                company: "Newphoria Corporation",
+                companyURL: "http://www.newphoria.co.jp/" }
+          ],
+          //inlineCSS   : true,
+          //noIDLIn     : true,
+          wg          : "Web-based Signage Business Group",
+          wgURI       : "https://www.w3.org/community/websignage/",
+          wgPublicList: "public-websignage",
+          wgPatentURI :  "",
+          localBiblio :  {
+              "UPNPDEVICE": {
+                  title    : "UPnP Device Architecture",
+                  href     : "http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v2.0.pdf",
+                  publisher: "Open Connectivity Foundation"
+              }
+          }
+      };
+    </script>
+  </head>
+
+  <body>
+
+<div class="warning">
+  <p>This is <em>unofficial</em> document.</p>
+</div>
+
+<section id="abstract">
+  <p>The Device Information API enables web applications to get the device-specific information, such as hardware serial number, manufacturer name, model number. This API is supposed to be used mainly for digital signage terminal, such as TV sets or STBs embedding a web-runtime. But this API does not limit to digital signage terminal. This API could be used for several embedded devices.</p>
+  <p>Some Web-based Signage terminal devices implements UPnP (Universal Plug and Play). Other devices also implements some kind of method to expose such information. In either case, Web-based Signage terminal devices have their own information similar to the device description specified in UPnP Device Architecture. Therefore, this API exposes device information similar to the device description of UPnP Device Architecture. [[UPNPDEVICE]]</p>
+</section>
+
+<section id="sotd">
+</section>
+
+<section id="conformance">
+</section>
+
+<section>
+  <h2>Use cases</h2>
+  <p>Digital signage operators manages a lot of signage terminals remotely. The terminals are located in a big area around, such as a big building, a large event site. For some situations, the terminals are located in a city, nationwide area around. Once the terminals are installed, the operator have to manage them remotely.</p>
+  <p>Just like network administration (remotely managing routers, hubs, PCs, and so on), signage operators have to know the device-specific information (hardware serial number, etc.), network information (IP address, etc.) remotely in the purpose of terminal administration.<p>
+  <p>These information is used for not only terminal administration but also terminal authentication. Most of signage management system limits number of terminals allowed to be managed. The signage management systems require some kind of device-specific information in order to prevent to be connected by unlicensed number of devices. For the purpose, the device-specific information is required in signage scene.<p>
+</section>
+
+<section>
+  <h2>Terminology</h2>
+  <p>In the architecture of Web-based Signage, signage service operators remotely control signage terminals, contents, etc. Though many people pass in front of a Web-based Signage terminal, they can just watch the content basically. In this context, the user of the browser is a signage service operator or an owner of the device, not passing-by persons. Therefore, the term "<dfn id="term-user">user</dfn>" means a signage service operator or an owner of the signage terminal device in this document. But for the avoidance of confusion, the term "<dfn id="term-signage-service-operator">signage service operator</dfn>" is used as "<a href="#term-user">user</a>" in this document.</p>
+  <p>In most W3C specification, a web browser is called as a "user agent". Commonly, hearing the term "user agent" or "web browser", most of people tend to imagine a general web browser which can access arbitrary web pages controlled by so-called "user". Web-based Signage terminal devices don't use such so-called "web-browser". Web-based Signage basically access to only contents managed by the signage service operator or the owner of the device. Besides, no address bar, no status bar, no menu is shown on the display. Any persons in front of the Web-based Signage terminal device can not access to any web page they want to see at all. Therefore, the web browser used in the Web-based Signage terminal device is called as "<dfn id="term-web-runtime">web-runtime</dfn>" in this document in order to separate from general web browser we always use in a PC, a smartphone, and so on.</p>
+</section>
+
+<section id="examples" class="informative">
+  <h2>Examples of usage</h2>
+  <pre class="example highlight">
+    navigator.device.getDeviceInformation()
+      .then((deviceInfo) => {
+        console.log(deviceInfo.friendlyName);     // e.g. "HAPPY TV 803 42 inch"
+        console.log(deviceInfo.manufacturer);     // e.g. "ABC Corporation"
+        console.log(deviceInfo.modelDescription); // e.g. "ABC 4K LCDTV 2016"
+        console.log(deviceInfo.modelName);        // e.g. "HAPPY Series"
+        console.log(deviceInfo.modelNumber);      // e.g. "HP803S42-2016"
+        console.log(deviceInfo.serialNumber);     // e.g. "0123456789ABCDEF"
+      })
+      .catch((error) => {
+        console.log('[ERROR] ' + error.message);
+      });
+  </pre>
+</section>
+
+<section id="security">
+  <h2>Security and Privacy Considerations</h2>
+  <p>In this section, the architecture of Web-based Signage is described at first for the purpose of considering potential risks for Web-based Signage. Then the potential risks for Web-based Signage are listed, lastly the ways to protect security and privacy are proposed.</p>
+  <section>
+    <h3>Architecture of Web-based Signage terminal</h3>
+    <p>A Web-based Signage consists of a <a href="#term-web-runtime">web-runtime</a>, a JavaScript player, and contents. Generally, Web-based Signage terminal devices implement a <a href="#term-web-runtime">web-runtime</a>. The JavaScript player is just a web application from a viewpoint of the <a href="#term-web-runtime">web-runtime</a>. The JavaScript player consists of HTML, CSS, JavaScript. The JavaScript player fetches playlists from the pre-defined URL of the CMS (Content Management System), then it fetches contents to play (images, videos, HTML contents, etc.) based on the playlists.</p>
+    <p>There are two types of architecture in terms of running a JavaScript player on a <a href="#term-web-runtime">web-runtime</a>:
+    <section>
+      <h4 id="Hosted-app-architecture">Hosted app architecture</h4>
+      <p>In the hosted app architecture, the JavaScript player is hosted on a server. Generally, the terminal of this architecture have to be set an <dfn id="initial-URL">initial URL</dfn> which the <a href="#term-web-runtime">web-runtime</a> is supposed to access when the terminal is turned on. The initial URL is set by the terminal owner or the <a href="#term-signage-service-operator">signage service operator</a>. This mode is called <dfn id="initially-access-preset-url-mode">initially-access-preset-url mode</dfn> in this document.</p>
+    </section>
+    <section>
+      <h4 id="Packaged-app-architecture">Packaged app architecture</h4>
+      <p>In the packaged app architecture, the JavaScript player is packaged in an packaged app. The packaged app is installed in the application platform of the Web-based Signage terminal device. That is, the JavaScript player hosted in the device.</p>
+      <p>In this architecture, <a href="#initial-URL">initial URL</a> points to a local HTML file packaged in the packaged app, which is run at first when the packaged app is started. Besides, all HTML files packaged in the packaged app have the same origin as the <a href="#initial-URL">initial URL</a>. Basically, this architecture is always in the <a href="#initially-access-preset-url-mode">initially-access-preset-url mode</a>.</p>
+    </section>
+  </section>
+  <section>
+    <h3>Potential risks</h3>
+    <section>
+      <h4>Runing a malicious HTML content in the <code>iframe</code> element</h4>
+      <p>Web-based Signage runs or plays contents managed by <a href="#term-signage-service-operator">signage service operator</a>s. Particularly, the JavaScript player is trusted. But the JavaScript player runs or plays a lot of contents, such as images, videos, HTML contents. An Image or a video is not harmful in itself because it is not scriptable. What could be harmful is HTML content.</p>
+      <p>Basically, as HTML contents as signage contents are managed by a <a href="#term-signage-service-operator">signage service operator</a>, they should not be harmful in most of situation. But <a href="#term-signage-service-operator">signage service operator</a> could set a 3rd party HTML content as a signage content by mistake or intentionally. If the 3rd party HTML content is malicious, it could get the device information through this API and send the information to the 3rd party's server.</p>
+      <p>Such 3rd party HTML contents are supposed to be run in the <a href="https://html.spec.whatwg.org/multipage/embedded-content.html#the-iframe-element"><code>iframe</code></a> element generated by the JavaScript player. In order to prevent this risk, this API must be exposed only to the JavaScript player. [[!HTML]]</p>
+    </section>
+    <section>
+      <h4>Navigating to a malicious web page</h4>
+      <p>If a HTML content managed by the <a href="#term-signage-service-operator">signage service operator</a> navigates to a web page which has a different origin from the <a href="#initial-URL">initial URL</a>, the Web-based Signage terminal device could be exposed to risk because the page is not uncontrollable by the <a href="#term-signage-service-operator">signage service operator</a>. Especially if the <a href="https://www.w3.org/TR/html51/browsers.html#top-level-browsing-context">top-level browsing context</a> is taken over by a malicious third page, tremendous negative impact could cause.</p>
+      <p>To prevent this risk, this API should be exposed only to the same origin as the <a href="#initial-URL">initial URL</a>.</p>
+    </section>
+    <section>
+      <h4>Eavesdropping</h4>
+      <p>One of the possible use case of this API is to send the result of this API to the signage management system using XMLHttpRequest or WebSocket. If the network connection were not secure, the message in the connection could be eavesdropped. Though this API is not able to prevent the eavesdropping directly, it could be indirectly.</p>
+      <p>In order to mitigate this risk, this API should be available only in a <a href="https://w3c.github.io/webappsec-secure-contexts/#secure-context">secure context</a>, so that XMLHttpRequest or WebSocket connection is forced to be a secure connection. [[!powerful-features]]</p>
+    </section>
+  </section>
+  <section>
+    <h3>Protecting Security and Privacy</h3>
+    <p>This API MUST NOT be exposed in general web browsers which can run arbitrary web contents because of security reasons. This API MAY be available only when the all conditions as follows are met:</p>
+    <ul>
+      <li>The web runtime is run in the <a href="#initially-access-preset-url-mode">initially-access-preset-url mode</a>.</li>
+      <li>The origin of the <a href="https://html.spec.whatwg.org/multipage/webappapis.html#environment-settings-object">environment settings object</a> is as same as the origin of the <a href="#initial-URL">initial URL</a></li>
+      <li>The API was called from the <a href="https://www.w3.org/TR/html51/browsers.html#top-level-browsing-context">top-level browsing context</a>.</li>
+      <li>The API is called in a <a href="https://w3c.github.io/webappsec-secure-contexts/#secure-context">secure context</a>.</li>
+    </ul>
+    <p>Besides, if the device runs a <a href="#Packaged-app-architecture">packaged app</a>, the API MAY be available only when the packaged app is privileged to use the API by some kind of app authentication mechanisms provided by the underlying application runtime. The app authentication is not defined in this specification.</p>
+  </section>
+</section>
+
+<section>
+  <h2>Design principle of the API</h2>
+  <p>Most of existing Web-based Signage terminal devices have mechanisms to get the device information similar to one defined in this document. For now, such devices exposes such feature in a proprietary way as an asynchronous mechanism. Therefore this API is designed as an asynchronous method, so that Web-based Signage terminal device manufacturers implements this API in their web-based platform in a way that allows them to take advantage of their existing proprietary mechanisms or allows them to provide this API through their official JavaScript library.</p>
+</section>
+
+<section dfn-for="Navigator">
+  <h2>Extensions to the <code>Navigator</code> interface</h2>
+  <pre class=idl>
+    [Exposed=(Window)]
+    partial interface Navigator {
+      readonly attribute DeviceInformation device;
+    };
+
+    [Exposed=(Worker)]
+    partial interface WorkerNavigator {
+      readonly attribute DeviceInformation device;
+    };
+  </pre>
+
+  <p>The <dfn><code>device</code></dfn> attribute, when getting, returns an object that implements the <a href="#Device-interface"><code>Device</code></a> interface.</p>
+  <div class="issue">
+    <p>I'm not sure this attribute name "<code>device</code>" is appropriate. Other candidates I come up with are "<code>tv</code>", "<code>signage</code>", "<code>embeddedDevice</code>".</p>
+  </div>
+</section>
+
+<section dfn-for="Device">
+  <h3>The <code>Device</code> Interface</h3>
+  <p>The <code>Device</code> interface provides a means to access information about the device-specific information which the web runtime is currently using.</p>
+
+  <pre class="idl">
+    [Exposed=(Window,Worker)]
+    interface Device {
+      Promise&lt;DeviceInfo&gt; getDeviceInfo();
+    };
+  </pre>
+
+  <p>The <code><dfn>getDeviceInfo</dfn>()</code> method, when invoked, MUST return a new <a href="https://tc39.github.io/ecma262/#sec-promise-objects"><code>Promise</code></a> and run the following steps: [[!ECMASCRIPT]] [[!PROMISES-GUIDE]]</p>
+  <ol>
+    <li>If the the browsing context is not the <a href="https://www.w3.org/TR/html51/browsers.html#top-level-browsing-context">top-level browsing context</a>, <a href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise">reject</a> <i>promise</i> with a <a href="https://heycam.github.io/webidl/#securityerror">SecurityError</a> and abort these steps.</li>
+    <li>If the origin of the <a href="https://html.spec.whatwg.org/multipage/webappapis.html#environment-settings-object">environment settings object</a> is not as same as the origin of the <a href="#initial-URL">initial URL</a>, <a href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise">reject</a> <i>promise</i> with a <a href="https://heycam.github.io/webidl/#securityerror">SecurityError</a> and abort these steps.</li>
+    <li>If the <a href="https://html.spec.whatwg.org/multipage/webappapis.html#environment-settings-object">environment settings object</a> is not a <a href="https://w3c.github.io/webappsec-secure-contexts/#secure-context">secure context</a>, <a href="https://www.w3.org/2001/tag/doc/promises-guide/#reject-promise">reject</a> <i>promise</i> with a <a href="https://heycam.github.io/webidl/#securityerror">SecurityError</a> and abort these steps.</li>
+    <li>Fetch the device information from the underlying application platform, then newly create a <a href="#DeviceInfo-interface"><code>DeviceInfo</code></a> object using the fetched device information.</li>
+    <li>Let <i>info</i> be the newly created <a href="#DeviceInfo-interface"><code>DeviceInfo</code></a> object.</li>
+    <li><a href="https://www.w3.org/2001/tag/doc/promises-guide/#resolve-promise">Resolve</a> <i>promise</i> with <i>info</i>.</li>
+  </ol>
+</section>
+
+<section dfn-for="DeviceInfo">
+  <h2>The <code>DeviceInfo</code> Interface</h2>
+  <pre class="idl">
+    interface DeviceInfo {
+      readonly attribute DOMString friendlyName;
+      readonly attribute DOMString manufacturer;
+      readonly attribute DOMString modelDescription;
+      readonly attribute DOMString modelName;
+      readonly attribute DOMString modelNumber;
+      readonly attribute DOMString serialNumber;
+    };
+  </pre>
+  <dl>
+    <dt><dfn>friendlyName</dfn></dt>
+    <dd>The <code>friendlyName</code> attribute MUST return the short description of the device. This value is mainly used to indicate this device for the <a href="#term-signage-service-operator">signage service operator</a>. This value MUST NOT an empty string.</dd>
+    <dt><dfn>manufacturer</dfn></dt>
+    <dd>The <code>manufacturer</code> attribute MUST return the manufacturer's name. This value MUST NOT an empty string.</dd>
+    <dt><dfn>modelDescription</dfn></dt>
+    <dd>The <code>modelDescription</code> attribute MUST return the long description if the device has one, and the empty string otherwise.</dd>
+    <dt><dfn>modelName</dfn></dt>
+    <dd>The <code>modelName</code> attribute MUST return the model name of the device. This value MUST NOT an empty string.</dd>
+    <dt><dfn>modelNumber</dfn></dt>
+    <dd>The <code>modelNumber</code> attribute MUST return the model number of the device if the device has one, and the empty string otherwise.</dd>
+    <dt><dfn>serialNumber</dfn></dt>
+    <dd>The <code>serialNumber</code> attribute MUST return the serial number of the device. This value MUST NOT an empty string.</dd>
+  </dl>
+</section>
+
+  </body>
+</html>
+
