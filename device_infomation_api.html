@@ -35,12 +35,12 @@
   <body>
 
 <div class="warning">
-  <p>This is un <em>unofficial</em> document.</p>
+  <p>This is <em>unofficial</em> document.</p>
 </div>
 
 <section id="abstract">
-  <p>The Device Information API enables web applications to get the device-specific information, such as hardware serial number, manufacturer name, model number. This API is supposed to be used mainly for digital signage terminal, such as TV sets or STBs embedding a web-runtime. But this API does not limit to digital signage terminal. This API could be used for several embedded devices.</p>
-  <p>Some Web-based Signage terminal devices implements UPnP (Universal Plug and Play). Other devices also implements some kind of method to expose such information. In either case, Web-based Signage terminal devices have their own information similar to the device description specified in UPnP Device Architecture. Therefore, this API exposes device information similar to the device description of UPnP Device Architecture. [[UPNPDEVICE]]</p>
+  <p>The Device Information API enables web applications to get the device-specific information, such as hardware serial number, manufacturer name, model number. This API is supposed to be used mainly for digital signage terminal, such as TV sets or STBs embedding a web-runtime. But the usage of this API does not limit to digital signage terminal. This API could be used for various embedded devices.</p>
+  <p>Some Web-based Signage terminal devices implement UPnP (Universal Plug and Play). Other devices also implement some kind of method to expose such information. In either case, Web-based Signage terminal devices have their own information similar to the device description specified in UPnP Device Architecture. Therefore, this API exposes device information similar to the device description of UPnP Device Architecture. [[UPNPDEVICE]]</p>
 </section>
 
 <section id="sotd">
@@ -51,7 +51,7 @@
 
 <section>
   <h2>Use cases</h2>
-  <p>Digital signage operators manages a lot of signage terminals remotely. The terminals are located in a big area around, such as a big building, a large event site. For some situations, the terminals are located in a city, nationwide area around. Once the terminals are installed, the operator has to manage them remotely.</p>
+  <p>Digital signage operators manage a lot of signage terminals remotely. The terminals are located in a big area around, such as a big building, a large event site. For some situations, the terminals are located in a city, nationwide area around. Once the terminals are installed, the operator has to manage them remotely.</p>
   <p>Just like network administration (remotely managing routers, hubs, PCs, and so on), the signage operator has to know the device-specific information (hardware serial number, etc.), network information (IP address, etc.) remotely in the purpose of terminal administration.<p>
   <p>Such information is used for not only terminal administration but also terminal authentication. Most of signage management system limits the number of terminals allowed to be managed. The signage management systems require some kind of device-specific information in order to prevent to be connected by unlicensed number of devices. For the purpose, the device-specific information is required in signage systems.<p>
 </section>
@@ -194,11 +194,11 @@
     <dt><dfn>manufacturer</dfn></dt>
     <dd>The <code>manufacturer</code> attribute MUST return the manufacturer's name. This value MUST NOT an empty string.</dd>
     <dt><dfn>modelDescription</dfn></dt>
-    <dd>The <code>modelDescription</code> attribute MUST return the long description if the device has one, and the empty string otherwise.</dd>
+    <dd>The <code>modelDescription</code> attribute MUST return the long description, if the device has one, or the empty string otherwise.</dd>
     <dt><dfn>modelName</dfn></dt>
     <dd>The <code>modelName</code> attribute MUST return the model name of the device. This value MUST NOT an empty string.</dd>
     <dt><dfn>modelNumber</dfn></dt>
-    <dd>The <code>modelNumber</code> attribute MUST return the model number of the device if the device has one, and the empty string otherwise.</dd>
+    <dd>The <code>modelNumber</code> attribute MUST return the model number of the device, if the device has one, or the empty string otherwise.</dd>
     <dt><dfn>serialNumber</dfn></dt>
     <dd>The <code>serialNumber</code> attribute MUST return the serial number of the device. This value MUST NOT an empty string.</dd>
   </dl>
