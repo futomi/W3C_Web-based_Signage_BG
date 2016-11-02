@@ -3,8 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Device Information API</title>
-    <script src='https://www.w3.org/Tools/respec/respec-w3c-common'
-            class='remove'></script>
+    <script src='https://www.w3.org/Tools/respec/respec-w3c-common' class='remove'></script>
     <script class="remove">
       var respecConfig = {
           specStatus  : "BG-DRAFT",
@@ -22,7 +21,7 @@
           wgPublicList: "public-websignage",
           wgPatentURI :  "",
           localBiblio :  {
-              "UPNPDEVICE": {
+              "UPNP-DEVICEARCH20": {
                   title    : "UPnP Device Architecture",
                   href     : "http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v2.0.pdf",
                   publisher: "Open Connectivity Foundation"
@@ -40,7 +39,7 @@
 
 <section id="abstract">
   <p>The Device Information API enables web applications to get the device-specific information, such as hardware serial number, manufacturer name, model number. This API is supposed to be used mainly for digital signage terminal, such as TV sets or STBs embedding a web-runtime. But the usage of this API does not limit to digital signage terminal. This API could be used for various embedded devices.</p>
-  <p>Some Web-based Signage terminal devices implement UPnP (Universal Plug and Play). Other devices also implement some kind of method to expose such information. In either case, Web-based Signage terminal devices have their own information similar to the device description specified in UPnP Device Architecture. Therefore, this API exposes device information similar to the device description of UPnP Device Architecture. [[UPNPDEVICE]]</p>
+  <p>Some Web-based Signage terminal devices implement UPnP (Universal Plug and Play). Other devices also implement some kind of method to expose such information. In either case, Web-based Signage terminal devices have their own information similar to the device description specified in UPnP Device Architecture. Therefore, this API exposes device information similar to the device description of UPnP Device Architecture. [[UPNP-DEVICEARCH20]]</p>
 </section>
 
 <section id="sotd">
@@ -64,19 +63,37 @@
 
 <section id="examples" class="informative">
   <h2>Examples of usage</h2>
+  <p>The JavaScript code below shows the usage of this API:
   <pre class="example highlight">
-    navigator.device.getDeviceInformation()
-      .then((deviceInfo) => {
-        console.log(deviceInfo.friendlyName);     // e.g. "HAPPY TV 803 42 inch"
-        console.log(deviceInfo.manufacturer);     // e.g. "ABC Corporation"
-        console.log(deviceInfo.modelDescription); // e.g. "ABC 4K LCDTV 2016"
-        console.log(deviceInfo.modelName);        // e.g. "HAPPY Series"
-        console.log(deviceInfo.modelNumber);      // e.g. "HP803S42-2016"
-        console.log(deviceInfo.serialNumber);     // e.g. "0123456789ABCDEF"
-      })
-      .catch((error) => {
-        console.log('[ERROR] ' + error.message);
+    navigator.device.getDeviceInformation().then((deviceInfo) => {
+      console.log(deviceInfo.friendlyName);     // e.g. "HAPPY TV 803 42 inch"
+      console.log(deviceInfo.manufacturer);     // e.g. "ABC Corporation"
+      console.log(deviceInfo.modelDescription); // e.g. "ABC 4K LCDTV 2016"
+      console.log(deviceInfo.modelName);        // e.g. "HAPPY Series"
+      console.log(deviceInfo.modelNumber);      // e.g. "HP803S42-2016"
+      console.log(deviceInfo.serialNumber);     // e.g. "0123456789ABCDEF"
+    }).catch((error) => {
+      console.log('[ERROR] ' + error.message);
+    });
+  </pre>
+  <p>The information obtained from this API is generally used for the signage terminal management of the signage system. Especially, the serial number is important for the signage system to identify the terminal. In most cases, the information is sent to the signage system using XMLHttpRequest, Fetch API, or WebSocket. The JavaScript code below shows how to send the information to the signage system using Fetch API. [[XHR]] [[FETCH]] [[websockets]]</p>
+  <pre class="example highlight">
+    navigator.device.getDeviceInformation().then((deviceInfo) => {
+      var data = new FormData();
+      data.append('name', deviceInfo.friendlyName);
+      data.append('serial', deviceInfo.serialNumber);
+      return fetch('https://signage.example.jp/device', {
+        mode:'cors',
+        method: 'POST',
+        body: data
       });
+    }).then((response) => {
+      return response.json();
+    }).then((json) => {
+      console.log('Done!');
+    }).catch((error) => {
+      console.log('[ERROR] ' + error.message);
+    });
   </pre>
 </section>
 
